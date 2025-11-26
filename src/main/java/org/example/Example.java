@@ -11,8 +11,6 @@ import java.util.jar.JarFile;
 public class Example {
 
     public static void main(String[] args) throws IOException {
-//        var printer = new ByteCodePrinter();
-//        printer.printBubbleSortBytecode();
         try (JarFile sampleJar = new JarFile("src/main/resources/sample.jar")) {
             Enumeration<JarEntry> enumeration = sampleJar.entries();
 
