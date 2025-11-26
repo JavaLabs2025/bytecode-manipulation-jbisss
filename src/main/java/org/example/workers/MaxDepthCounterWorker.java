@@ -4,18 +4,20 @@ import org.example.visitor.ClassMapVisitor;
 import org.objectweb.asm.ClassVisitor;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MaxDepthCounterWorker extends BaseWorker {
 
     @Override
-    public void doTheJob(String pathToJar, ClassVisitor visitor) throws IOException {
+    public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException {
         loadJar(pathToJar, visitor);
         Map<String, String> classMap = ((ClassMapVisitor) visitor).getSuperMap();
         Map<String, Integer> depths = computeDepths(classMap);
 
-        printMaxDepth(depths);
+        printMaxDepth(depths, ps);
     }
 
     private Map<String, Integer> computeDepths(Map<String, String> classMap) {
@@ -38,15 +40,15 @@ public class MaxDepthCounterWorker extends BaseWorker {
         }
     }
 
-    private void printMaxDepth(Map<String, Integer> depths) {
+    private void printMaxDepth(Map<String, Integer> depths, PrintStream ps) {
         Map.Entry<String, Integer> maxEntry = depths.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .orElse(null);
 
         if (maxEntry != null) {
-            System.out.println("Class with max depth: " + maxEntry.getKey());
-            System.out.println("Max depth: " + maxEntry.getValue());
+            ps.println("Class with max depth: " + maxEntry.getKey());
+            ps.println("Max depth: " + maxEntry.getValue());
         }
     }
 }

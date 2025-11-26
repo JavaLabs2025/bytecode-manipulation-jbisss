@@ -4,18 +4,20 @@ import org.example.visitor.ClassMapVisitor;
 import org.objectweb.asm.ClassVisitor;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AverageDepthCounterWorker extends BaseWorker {
 
     @Override
-    public void doTheJob(String pathToJar, ClassVisitor visitor) throws IOException {
+    public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException {
         loadJar(pathToJar, visitor);
         Map<String, String> classMap = ((ClassMapVisitor) visitor).getSuperMap();
         Map<String, Integer> depths = computeDepths(classMap);
 
-        printAverageDepth(depths);
+        printAverageDepth(depths, ps);
     }
 
     private Map<String, Integer> computeDepths(Map<String, String> classMap) {
@@ -38,12 +40,12 @@ public class AverageDepthCounterWorker extends BaseWorker {
         }
     }
 
-    private void printAverageDepth(Map<String, Integer> depths) {
+    private void printAverageDepth(Map<String, Integer> depths, PrintStream ps) {
         double average = depths.values().stream()
                 .mapToDouble(i -> i)
                 .average()
                 .orElse(0);
 
-        System.out.println("Average depth: " + average);
+        ps.println("Average depth: " + average);
     }
 }

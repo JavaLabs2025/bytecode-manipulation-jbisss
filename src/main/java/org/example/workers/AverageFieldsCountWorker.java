@@ -4,25 +4,27 @@ import org.example.visitor.ClassMapVisitor;
 import org.objectweb.asm.ClassVisitor;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Map;
 
 public class AverageFieldsCountWorker extends BaseWorker {
 
     @Override
-    public void doTheJob(String pathToJar, ClassVisitor visitor) throws IOException {
+    public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException {
         loadJar(pathToJar, visitor);
         Map<String, Integer> fieldCount = ((ClassMapVisitor) visitor).getFieldCount();
 
-        printAverageFieldsCount(fieldCount);
+        printAverageFieldsCount(fieldCount, ps);
     }
 
-    private void printAverageFieldsCount(Map<String, Integer> fieldCount) {
+    private void printAverageFieldsCount(Map<String, Integer> fieldCount, PrintStream ps) {
         double avgFields = fieldCount.values()
                 .stream()
                 .mapToInt(i -> i)
                 .average()
                 .orElse(0);
 
-        System.out.println("Average fields amount: " + avgFields);
+        ps.println("Average fields amount: " + avgFields);
     }
 }

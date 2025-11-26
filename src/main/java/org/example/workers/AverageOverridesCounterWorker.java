@@ -4,6 +4,8 @@ import org.example.visitor.ClassMapVisitor;
 import org.objectweb.asm.ClassVisitor;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,7 @@ public class AverageOverridesCounterWorker extends BaseWorker {
     private final Map<String, Integer> overriddenCount = new HashMap<>();
 
     @Override
-    public void doTheJob(String pathToJar, ClassVisitor visitor) throws IOException {
+    public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException {
         loadJar(pathToJar, visitor);
         Map<String, List<String>> methods = ((ClassMapVisitor) visitor).getMethods();
         Map<String, String> superMap = ((ClassMapVisitor) visitor).getSuperMap();
@@ -37,13 +39,13 @@ public class AverageOverridesCounterWorker extends BaseWorker {
 
             overriddenCount.put(cls, count);
         }
-        printOverriddenCounts();
+        printOverriddenCounts(ps);
     }
 
-    private void printOverriddenCounts() {
-        System.out.println("Overrides counts:");
+    private void printOverriddenCounts(PrintStream ps) {
+        ps.println("Overrides counts:");
         for (String cls : overriddenCount.keySet()) {
-            System.out.println(cls + " - " + overriddenCount.get(cls));
+            ps.println(cls + " - " + overriddenCount.get(cls));
         }
     }
 }
