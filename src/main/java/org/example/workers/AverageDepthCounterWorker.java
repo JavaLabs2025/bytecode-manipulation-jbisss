@@ -1,23 +1,25 @@
 package org.example.workers;
 
+import org.example.StatItemDto;
 import org.example.visitor.ClassMapVisitor;
 import org.objectweb.asm.ClassVisitor;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AverageDepthCounterWorker extends BaseWorker {
 
     @Override
-    public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException {
+    public StatItemDto doTheJob(String pathToJar, ClassVisitor visitor) throws IOException {
         loadJar(pathToJar, visitor);
         Map<String, String> classMap = ((ClassMapVisitor) visitor).getSuperMap();
         Map<String, Integer> depths = computeDepths(classMap);
 
-        printAverageDepth(depths, ps);
+        return collectAverageDepth(depths);
     }
 
     private Map<String, Integer> computeDepths(Map<String, String> classMap) {
@@ -40,12 +42,11 @@ public class AverageDepthCounterWorker extends BaseWorker {
         }
     }
 
-    private void printAverageDepth(Map<String, Integer> depths, PrintStream ps) {
+    private StatItemDto collectAverageDepth(Map<String, Integer> depths) {
         double average = depths.values().stream()
                 .mapToDouble(i -> i)
                 .average()
                 .orElse(0);
-
-        ps.println("Average depth: " + average);
+        return new StatItemDto(MetricEnum.AVERAGE_DEPTH_COUNT, List.of(new StatItemDto.Item("Average depth", Double.toString(average))));
     }
 }

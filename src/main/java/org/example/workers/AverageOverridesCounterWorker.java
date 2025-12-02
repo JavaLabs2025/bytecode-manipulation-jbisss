@@ -1,11 +1,12 @@
 package org.example.workers;
 
+import org.example.StatItemDto;
 import org.example.visitor.ClassMapVisitor;
 import org.objectweb.asm.ClassVisitor;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class AverageOverridesCounterWorker extends BaseWorker {
     private final Map<String, Integer> overriddenCount = new HashMap<>();
 
     @Override
-    public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException {
+    public StatItemDto doTheJob(String pathToJar, ClassVisitor visitor) throws IOException {
         loadJar(pathToJar, visitor);
         Map<String, List<String>> methods = ((ClassMapVisitor) visitor).getMethods();
         Map<String, String> superMap = ((ClassMapVisitor) visitor).getSuperMap();
@@ -39,13 +40,15 @@ public class AverageOverridesCounterWorker extends BaseWorker {
 
             overriddenCount.put(cls, count);
         }
-        printOverriddenCounts(ps);
+        return collectOverriddenCounts();
     }
 
-    private void printOverriddenCounts(PrintStream ps) {
-        ps.println("Overrides counts:");
+    private StatItemDto collectOverriddenCounts() {
+        List<StatItemDto.Item> items = new ArrayList<>();
+
         for (String cls : overriddenCount.keySet()) {
-            ps.println(cls + " - " + overriddenCount.get(cls));
+            items.add(new StatItemDto.Item(cls, Integer.toString(overriddenCount.get(cls))));
         }
+        return new StatItemDto(MetricEnum.AVERAGE_OVERRIDES_COUNT, items);
     }
 }

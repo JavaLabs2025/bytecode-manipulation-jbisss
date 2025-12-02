@@ -1,5 +1,6 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.visitor.AbcVisitor;
 import org.example.visitor.ClassMapVisitor;
 import org.example.workers.*;
@@ -8,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LabMain {
 
@@ -39,33 +42,43 @@ public class LabMain {
         }
 
         assert ps != null;
-        ps.println("-----------------------------------------------------");
-        MaxDepthCounterWorker maxDepthCounterWorker = new MaxDepthCounterWorker();
-        maxDepthCounterWorker.doTheJob(PATH_TO_JAR, classMapVisitor, ps);
+        List<StatItemDto> resultStats = new ArrayList<>();
 
-        ps.println("-----------------------------------------------------");
+        MaxDepthCounterWorker maxDepthCounterWorker = new MaxDepthCounterWorker();
+        StatItemDto maxDepthCounterWorkerStat = maxDepthCounterWorker.doTheJob(PATH_TO_JAR, classMapVisitor);
+        resultStats.add(maxDepthCounterWorkerStat);
 
         AverageDepthCounterWorker averageDepthCounterWorker = new AverageDepthCounterWorker();
-        averageDepthCounterWorker.doTheJob(PATH_TO_JAR, classMapVisitor, ps);
-
-        ps.println("-----------------------------------------------------");
+        StatItemDto averageDepthCounterWorkerStat = averageDepthCounterWorker.doTheJob(PATH_TO_JAR, classMapVisitor);
+        resultStats.add(averageDepthCounterWorkerStat);
 
         AverageOverridesCounterWorker averageOverridesCounterWorker = new AverageOverridesCounterWorker();
-        averageOverridesCounterWorker.doTheJob(PATH_TO_JAR, classMapVisitor, ps);
-
-        ps.println("-----------------------------------------------------");
+        StatItemDto averageOverridesCounterWorkerStat = averageOverridesCounterWorker.doTheJob(PATH_TO_JAR, classMapVisitor);
+        resultStats.add(averageOverridesCounterWorkerStat);
 
         AverageFieldsCountWorker averageFieldsCountWorker = new AverageFieldsCountWorker();
-        averageFieldsCountWorker.doTheJob(PATH_TO_JAR, classMapVisitor, ps);
-
-        ps.println("-----------------------------------------------------");
+        StatItemDto averageFieldsCountWorkerStat = averageFieldsCountWorker.doTheJob(PATH_TO_JAR, classMapVisitor);
+        resultStats.add(averageFieldsCountWorkerStat);
 
         AbcWorker abcWorker = new AbcWorker();
-        abcWorker.doTheJob(PATH_TO_JAR, abcVisitor, ps);
-        ps.println("-----------------------------------------------------");
+        StatItemDto abcWorkerStat = abcWorker.doTheJob(PATH_TO_JAR, abcVisitor);
+        resultStats.add(abcWorkerStat);
+
+        printAsJson(resultStats, ps);
 
         if (toFile) {
             ps.close();
+        }
+    }
+
+    private static void printAsJson(List<?> list, PrintStream out) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(list);
+            out.println(json);
+        } catch (Exception e) {
+            e.printStackTrace(out);
         }
     }
 }

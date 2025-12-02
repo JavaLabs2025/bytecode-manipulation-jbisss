@@ -1,23 +1,25 @@
 package org.example.workers;
 
+import org.example.StatItemDto;
 import org.example.visitor.ClassMapVisitor;
 import org.objectweb.asm.ClassVisitor;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MaxDepthCounterWorker extends BaseWorker {
 
     @Override
-    public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException {
+    public StatItemDto doTheJob(String pathToJar, ClassVisitor visitor) throws IOException {
         loadJar(pathToJar, visitor);
         Map<String, String> classMap = ((ClassMapVisitor) visitor).getSuperMap();
         Map<String, Integer> depths = computeDepths(classMap);
 
-        printMaxDepth(depths, ps);
+        return collectMaxDepth(depths);
     }
 
     private Map<String, Integer> computeDepths(Map<String, String> classMap) {
@@ -40,15 +42,16 @@ public class MaxDepthCounterWorker extends BaseWorker {
         }
     }
 
-    private void printMaxDepth(Map<String, Integer> depths, PrintStream ps) {
+    private StatItemDto collectMaxDepth(Map<String, Integer> depths) {
         Map.Entry<String, Integer> maxEntry = depths.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .orElse(null);
 
         if (maxEntry != null) {
-            ps.println("Class with max depth: " + maxEntry.getKey());
-            ps.println("Max depth: " + maxEntry.getValue());
+            return new StatItemDto(MetricEnum.MAX_DEPTH_COUNT, List.of(new StatItemDto.Item("Max depth", maxEntry.getKey() + ": " + maxEntry.getValue())));
         }
+
+        return new StatItemDto(MetricEnum.MAX_DEPTH_COUNT, Collections.emptyList());
     }
 }

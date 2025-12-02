@@ -1,5 +1,6 @@
 package org.example.workers;
 
+import org.example.StatItemDto;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 
@@ -9,7 +10,7 @@ import java.util.jar.JarInputStream;
 
 abstract public class BaseWorker {
 
-    abstract public void doTheJob(String pathToJar, ClassVisitor visitor, PrintStream ps) throws IOException;
+    abstract public StatItemDto doTheJob(String pathToJar, ClassVisitor visitor) throws IOException;
 
     void loadJar(String jarPath, ClassVisitor visitor) throws IOException {
         try (InputStream in = new FileInputStream(jarPath);

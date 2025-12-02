@@ -1,16 +1,46 @@
------------------------------------------------------
-Class with max depth: P1
-Max depth: 2
------------------------------------------------------
-Average depth: 1.5
------------------------------------------------------
-Overrides counts:
-getX - 0
-getY - 0
-box - 0
-<init> - 0
------------------------------------------------------
-Average fields amount: 9.333333333333334
------------------------------------------------------
-Average assignments count: 6.0
------------------------------------------------------
+[ {
+  "metricType" : "MAX_DEPTH_COUNT",
+  "items" : [ {
+    "description" : "Max depth",
+    "value" : "P1: 2"
+  } ]
+}, {
+  "metricType" : "AVERAGE_DEPTH_COUNT",
+  "items" : [ {
+    "description" : "Average depth",
+    "value" : "1.5"
+  } ]
+}, {
+  "metricType" : "AVERAGE_OVERRIDES_COUNT",
+  "items" : [ {
+    "description" : "getX",
+    "value" : "0"
+  }, {
+    "description" : "getY",
+    "value" : "0"
+  }, {
+    "description" : "box",
+    "value" : "0"
+  }, {
+    "description" : "<init>",
+    "value" : "0"
+  } ]
+}, {
+  "metricType" : "AVERAGE_FIELDS_COUNT",
+  "items" : [ {
+    "description" : "Average fields amount",
+    "value" : "9.333333333333334"
+  } ]
+}, {
+  "metricType" : "ABC_COUNT",
+  "items" : [ {
+    "description" : "Average assignments count",
+    "value" : "6.0"
+  }, {
+    "description" : "Average branches count",
+    "value" : "5.375"
+  }, {
+    "description" : "Average conditions count",
+    "value" : "7.0"
+  } ]
+} ]
